@@ -1,47 +1,84 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <div class="app">
+    <!-- Navigation Bar - Hidden on Login Page -->
+    <nav class="navbar" v-if="!isLoginPage">
+      <ul>
+        <li><router-link to="/" class="nav-button">Home</router-link></li>
+        <li><router-link to="/schedule" class="nav-button">Schedule</router-link></li>
+        <li v-if="isAuthenticated">
+          <router-link to="/crew-members" class="nav-button">Crew Members</router-link>
+        </li>
+        <li v-if="isAuthenticated">
+          <router-link to="/profile" class="nav-button">Profile</router-link>
+        </li>
+        <!-- Add Admin link only for admin users -->
+        <li v-if="isAuthenticated">
+          <router-link to="/admin" class="nav-button">Admin</router-link>
+        </li>
+      </ul>
+    </nav>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <!-- Main Content -->
+    <div class="main-content" :class="{ 'full-width': isLoginPage }">
+      <!-- Auth Button (Hidden on Login Page) -->
+      <button 
+        v-if="!isLoginPage && !isAuthenticated" 
+        @click="goToLogin" 
+        class="login-button"
+      >
+        Log In
+      </button>
+      <button 
+        v-if="!isLoginPage && isAuthenticated" 
+        @click="logout" 
+        class="login-button"
+      >
+        Log Out ({{ username }})
+      </button>
+
+      <router-view></router-view>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script>
+import { auth } from '@/auth/auth'
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+export default {
+  name: 'App',
+  data() {
+    return {
+      isAuthenticated: false,
+      username: null
+    }
+  },
+  computed: {
+    isLoginPage() {
+      return this.$route.path === '/login'
+    }
+  },
+  isAdmin() {
+      return auth.isAdmin()
+    },
+  created() {
+    this.checkAuth()
+  },
+  methods: {
+    checkAuth() {
+      this.isAuthenticated = auth.checkAuth()
+      this.username = auth.username
+    },
+    goToLogin() {
+      this.$router.push('/login')
+    },
+    logout() {
+      auth.logout(() => {
+        this.checkAuth()
+        this.$router.push('/login')
+      })
+    }
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
 }
-</style>
+</script>
+
+<style src="@/assets/styles.css"></style>
