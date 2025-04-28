@@ -1,7 +1,7 @@
 package edu.tcu.cs.backend.system;
 
-import edu.tcu.cs.backend.crew.User;
-import edu.tcu.cs.backend.crew.UserRepository;
+import edu.tcu.cs.backend.user.User;
+import edu.tcu.cs.backend.user.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

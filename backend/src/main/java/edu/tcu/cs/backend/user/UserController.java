@@ -1,8 +1,8 @@
-package edu.tcu.cs.backend.crew;
+package edu.tcu.cs.backend.user;
 
-import edu.tcu.cs.backend.crew.converter.UserDtoToUser;
-import edu.tcu.cs.backend.crew.converter.UserToUserDto;
-import edu.tcu.cs.backend.crew.dto.UserDto;
+import edu.tcu.cs.backend.user.converter.UserDtoToUser;
+import edu.tcu.cs.backend.user.converter.UserToUserDto;
+import edu.tcu.cs.backend.user.dto.UserDto;
 import edu.tcu.cs.backend.system.Result;
 import edu.tcu.cs.backend.system.StatusCode;
 import jakarta.validation.Valid;
