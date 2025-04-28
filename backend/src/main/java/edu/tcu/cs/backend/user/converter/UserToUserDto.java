@@ -1,7 +1,7 @@
-package edu.tcu.cs.backend.crew.converter;
+package edu.tcu.cs.backend.user.converter;
 
-import edu.tcu.cs.backend.crew.User;
-import edu.tcu.cs.backend.crew.dto.UserDto;
+import edu.tcu.cs.backend.user.User;
+import edu.tcu.cs.backend.user.dto.UserDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -9,7 +9,7 @@ public class UserToUserDto {
 
     public UserDto convert(User user) {
         return new UserDto(
-                user.getId(),
+                user.getUser_id(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),

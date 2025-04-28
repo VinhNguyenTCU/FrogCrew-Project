@@ -1,6 +1,5 @@
 package edu.tcu.cs.backend.system.exception;
 
-import edu.tcu.cs.backend.crew.UserNotFoundException;
 import edu.tcu.cs.backend.system.Result;
 import edu.tcu.cs.backend.system.StatusCode;
 import org.springframework.http.HttpStatus;
@@ -18,9 +17,9 @@ public class ExceptionHandlerAdvice {
         this.error = error;
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler(ObjectNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    Result handleCrewMemberNotFoundException(UserNotFoundException exception) {
+    Result handleCrewMemberNotFoundException(ObjectNotFoundException exception) {
         return new Result(false, StatusCode.NOT_FOUND, exception.getMessage());
     }
 }

@@ -1,4 +1,4 @@
-package edu.tcu.cs.backend.crew.dto;
+package edu.tcu.cs.backend.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 public record UserDto(
-        Integer id,
+        Integer user_id,
         @NotBlank(message = "First name is required.")
         String firstName,
         @NotBlank(message = "Last name is required.")

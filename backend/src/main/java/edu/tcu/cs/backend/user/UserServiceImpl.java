@@ -1,5 +1,6 @@
-package edu.tcu.cs.backend.crew;
+package edu.tcu.cs.backend.user;
 
+import edu.tcu.cs.backend.system.exception.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -36,11 +37,11 @@ public class UserServiceImpl implements UserService{
         return userRepository.findAll();
     }
 
-    // Find crew member by Id
+    // Find crew member by ID
     @Override
     public User findById(int crewMemberId){
         return this.userRepository.findById(crewMemberId)
-                .orElseThrow(() -> new UserNotFoundException(crewMemberId));
+                .orElseThrow(() -> new ObjectNotFoundException("Crew member", crewMemberId));
     }
 
     @Override
@@ -62,13 +63,13 @@ public class UserServiceImpl implements UserService{
                     oldCrewMember.setPosition(newUser.getPosition());
                     return this.userRepository.save(oldCrewMember);
                 })
-                .orElseThrow(() -> new UserNotFoundException(crewMemberId));
+                .orElseThrow(() -> new ObjectNotFoundException("Crew member", crewMemberId));
     }
 
     @Override
     public void delete(int crewMemberId) {
         this.userRepository.findById(crewMemberId)
-                .orElseThrow(() -> new UserNotFoundException(crewMemberId));
+                .orElseThrow(() -> new ObjectNotFoundException("Crew member", crewMemberId));
         this.userRepository.deleteById(crewMemberId);
     }
 }

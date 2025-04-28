@@ -1,7 +1,7 @@
-package edu.tcu.cs.backend.crew.converter;
+package edu.tcu.cs.backend.user.converter;
 
-import edu.tcu.cs.backend.crew.User;
-import edu.tcu.cs.backend.crew.dto.UserDto;
+import edu.tcu.cs.backend.user.User;
+import edu.tcu.cs.backend.user.dto.UserDto;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
