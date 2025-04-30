@@ -39,11 +39,6 @@ public class Game {
 
     // Which users have been assigned
     @ManyToMany
-    @JoinTable(
-            name = "users",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
     private List<User> users = new ArrayList<>();
 
     // Back‐reference to its gameSchedule

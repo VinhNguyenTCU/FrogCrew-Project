@@ -5,11 +5,11 @@ import edu.tcu.cs.backend.user.dto.UserDto;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserToUserDto {
+public class UserToUserDtoConverter {
 
     public UserDto convert(User user) {
         return new UserDto(
-                user.getUser_id(),
+                user.getUserId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),

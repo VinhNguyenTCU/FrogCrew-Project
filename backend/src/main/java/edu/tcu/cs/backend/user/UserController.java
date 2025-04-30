@@ -1,7 +1,7 @@
 package edu.tcu.cs.backend.user;
 
-import edu.tcu.cs.backend.user.converter.UserDtoToUser;
-import edu.tcu.cs.backend.user.converter.UserToUserDto;
+import edu.tcu.cs.backend.user.converter.UserDtoToUserConverter;
+import edu.tcu.cs.backend.user.converter.UserToUserDtoConverter;
 import edu.tcu.cs.backend.user.dto.UserDto;
 import edu.tcu.cs.backend.system.Result;
 import edu.tcu.cs.backend.system.StatusCode;
@@ -15,14 +15,14 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    private final UserToUserDto userToUserDto;
+    private final UserToUserDtoConverter userToUserDtoConverter;
 
-    private final UserDtoToUser userDtoToUser;
+    private final UserDtoToUserConverter userDtoToUserConverter;
 
-    public UserController(UserService userService, UserToUserDto userToUserDto, UserDtoToUser userDtoToUser) {
+    public UserController(UserService userService, UserToUserDtoConverter userToUserDtoConverter, UserDtoToUserConverter userDtoToUserConverter) {
         this.userService = userService;
-        this.userToUserDto = userToUserDto;
-        this.userDtoToUser = userDtoToUser;
+        this.userToUserDtoConverter = userToUserDtoConverter;
+        this.userDtoToUserConverter = userDtoToUserConverter;
     }
 
     @GetMapping
@@ -31,7 +31,7 @@ public class UserController {
         // Convert foundUsers to a list of crewMemberDtos
 
         List<UserDto> foundCrewMembersDto = foundUsers.stream()
-                .map(this.userToUserDto::convert)
+                .map(this.userToUserDtoConverter::convert)
                 .toList();
 
         return new Result(true, StatusCode.SUCCESS, "Find Success", foundCrewMembersDto);
@@ -40,7 +40,7 @@ public class UserController {
     @GetMapping("/{crewMemberId}")
     public Result getCrewMemberById(@PathVariable int crewMemberId) {
         User user = this.userService.findById(crewMemberId);
-        UserDto userDto = this.userToUserDto.convert(user);
+        UserDto userDto = this.userToUserDtoConverter.convert(user);
         return new Result(true, StatusCode.SUCCESS, "Find Success", userDto);
     }
 
@@ -57,17 +57,17 @@ public class UserController {
     @PostMapping
     public Result addCrewMember(@RequestBody @Valid UserDto userDto) {
         // Convert userDto to user
-        User user = userDtoToUser.convert(userDto);
+        User user = userDtoToUserConverter.convert(userDto);
         User savedUser = this.userService.save(user);
-        UserDto savedUserDto = this.userToUserDto.convert(savedUser);
+        UserDto savedUserDto = this.userToUserDtoConverter.convert(savedUser);
         return new Result(true, StatusCode.SUCCESS, "Add Success", savedUserDto);
     }
 
     @PutMapping("/{crewMemberId}")
     public Result updateCrewMember(@PathVariable int crewMemberId,@RequestBody @Valid UserDto userDto) {
-        User user = this.userDtoToUser.convert(userDto);
+        User user = this.userDtoToUserConverter.convert(userDto);
         User updatedUser = this.userService.update(user, crewMemberId);
-        UserDto updatedUserDto = this.userToUserDto.convert(updatedUser);
+        UserDto updatedUserDto = this.userToUserDtoConverter.convert(updatedUser);
         return new Result(true, StatusCode.SUCCESS, "Update Success", updatedUserDto);
     }
 

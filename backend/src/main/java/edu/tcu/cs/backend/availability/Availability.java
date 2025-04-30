@@ -3,6 +3,7 @@ package edu.tcu.cs.backend.availability;
 import edu.tcu.cs.backend.game.Game;
 import edu.tcu.cs.backend.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,27 +13,21 @@ import java.io.Serializable;
 @Setter @Getter @NoArgsConstructor
 @Entity
 @Table(name = "availability")
-@IdClass(AvailabilityId.class)
 public class Availability implements Serializable {
 
+    // Each user submits 1 availability
     @Id
-    @Column(name = "user_id")
-    private Integer userId;
-
-    @Id
-    @Column(name = "game_id")
-    private Integer gameId;
-    private Boolean open;
-    private String comment;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
 
     @ManyToOne
-    @MapsId("userId")
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @NotNull(message = "Member id is required.")
     private User user;
 
     @ManyToOne
-    @MapsId("gameId")
-    @JoinColumn(name = "game_id", insertable = false, updatable = false)
     private Game game;
 
+    private Boolean availability;
+
+    private String comment;
 }
