@@ -50,7 +50,6 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Roles</th>
-                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -69,20 +68,28 @@
                     </option>
                   </select>
                 </td>
-                <td>{{ user.status || 'active' }}</td>
                 <td>
                   <button 
                     v-if="user.email !== adminEmail"
-                    @click="toggleUserStatus(user)"
-                    class="status-btn"
-                    :class="{ 'deactivate': user.status !== 'inactive', 'activate': user.status === 'inactive' }"
+                    @click="confirmDeleteUser(user)"
+                    class="delete-btn"
                   >
-                    {{ user.status === 'inactive' ? 'Activate' : 'Deactivate' }}
+                    Delete User
                   </button>
                 </td>
               </tr>
             </tbody>
           </table>
+          <div v-if="showDeleteModal" class="modal-overlay">
+            <div class="modal-content">
+              <h3>Confirm User Deletion</h3>
+              <p>Are you sure you want to permanently delete {{ userToDelete.fullName }}?</p>
+              <div class="modal-actions">
+                <button @click="deleteUser" class="confirm-delete-btn">Delete Permanently</button>
+                <button @click="cancelDelete" class="cancel-btn">Cancel</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -103,7 +110,9 @@
           { value: 'flight_attendant', label: 'Flight Attendant' },
           { value: 'ground_staff', label: 'Ground Staff' },
           { value: 'admin', label: 'Admin' }
-        ]
+        ],
+        showDeleteModal: false,
+        userToDelete: null
       }
     },
     computed: {
@@ -133,7 +142,6 @@
       },
       approveAccount(email) {
         auth.approveAccount(email)
-        // In a real app, you would show a success message
         alert('Account approved successfully!')
       },
       rejectAccount(email) {
@@ -142,7 +150,7 @@
         alert('Account request rejected!')
       },
       updateUserRoles(user) {
-        // Don't allow removing admin role from admin account
+        // Cannot remove admin role from admin
         if (user.email === this.adminEmail && !user.roles.includes('admin')) {
           user.roles.push('admin')
           alert('Cannot remove admin role from primary admin account')
@@ -176,7 +184,65 @@
           auth.approvedAccounts[accountIndex].status = user.status
           localStorage.setItem('approvedAccounts', JSON.stringify(auth.approvedAccounts))
         }
+      },
+      confirmDeleteUser(user) {
+        this.userToDelete = user
+        this.showDeleteModal = true
+      },
+
+      cancelDelete() {
+        this.showDeleteModal = false
+        this.userToDelete = null
+      },
+      deleteUser() {
+      if (!this.userToDelete) return
+
+      // Remove from approved accounts
+      auth.approvedAccounts = auth.approvedAccounts.filter(
+        user => user.email !== this.userToDelete.email
+      )
+
+      // Remove from pending accounts if exists
+      auth.pendingAccounts = auth.pendingAccounts.filter(
+        user => user.email !== this.userToDelete.email
+      )
+
+      // Update local storage
+      localStorage.setItem('approvedAccounts', JSON.stringify(auth.approvedAccounts))
+      localStorage.setItem('pendingAccounts', JSON.stringify(auth.pendingAccounts))
+
+      // If deleted user is currently logged in, log them out
+      if (auth.user?.email === this.userToDelete.email) {
+        auth.logout(() => {
+          this.$router.push('/login')
+        })
       }
+
+      this.showDeleteModal = false
+      this.userToDelete = null
+    },
+
+    // Update the updateUserRoles method to handle storage
+    updateUserRoles(user) {
+      if (user.email === this.adminEmail && !user.roles.includes('admin')) {
+        user.roles.push('admin')
+        alert('Cannot remove admin role from primary admin account')
+        return
+      }
+      
+      // Update in approved accounts
+      const accountIndex = auth.approvedAccounts.findIndex(a => a.email === user.email)
+      if (accountIndex !== -1) {
+        auth.approvedAccounts[accountIndex].roles = user.roles
+        localStorage.setItem('approvedAccounts', JSON.stringify(auth.approvedAccounts))
+      }
+      
+      // Update current user if it's them
+      if (auth.user?.email === user.email) {
+        auth.user.roles = user.roles
+        localStorage.setItem('user', JSON.stringify(auth.user))
+      }
+    }
     }
   }
   </script>
@@ -255,7 +321,7 @@
     cursor: pointer;
   }
   
-  .deactivate {
+  /* .deactivate {
     background-color: #ffc107;
     color: black;
   }
@@ -263,7 +329,7 @@
   .activate {
     background-color: #17a2b8;
     color: white;
-  }
+  } */
   
   .search-box {
     margin-bottom: 15px;
@@ -275,4 +341,58 @@
     border: 1px solid #ddd;
     border-radius: 4px;
   }
+
+  .delete-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.confirm-delete-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
   </style>

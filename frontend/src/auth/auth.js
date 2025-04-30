@@ -9,7 +9,7 @@ export const auth = {
     lastName: 'Heart',
     fullName: 'Bob Heart',
     email: 'Heart@gmail.com',
-    password: 'qwerty123', // In production, never store passwords like this
+    password: 'qwerty123', 
     phone: '',
     roles: ['admin', 'crew_member'],
     photoUrl: '',
@@ -86,5 +86,30 @@ export const auth = {
     this.isAuthenticated = isAuth;
     this.user = JSON.parse(localStorage.getItem('user'));
     return isAuth;
+  },
+
+  // Event management methods
+  getEvents() {
+    return JSON.parse(localStorage.getItem('events')) || []
+  },
+  
+  saveEvent(event) {
+    const events = this.getEvents()
+    const existingIndex = events.findIndex(e => e.id === event.id)
+    
+    if (existingIndex >= 0) {
+      events[existingIndex] = event // Update existing
+    } else {
+      event.id = Date.now().toString() // Generate ID for new events
+      events.push(event) // Add new
+    }
+    
+    localStorage.setItem('events', JSON.stringify(events))
+    return event
+  },
+  
+  deleteEvent(eventId) {
+    const events = this.getEvents().filter(e => e.id !== eventId)
+    localStorage.setItem('events', JSON.stringify(events))
   }
 };

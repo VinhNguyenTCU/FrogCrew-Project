@@ -48,7 +48,7 @@ export default {
     handleSubmit() {
       auth.login(this.email, this.password, (success) => {
         if (success) {
-          this.$router.push('/')
+          window.location.href = '/'
         } else {
           this.error = 'Invalid email or account not approved'
         }
@@ -78,5 +78,38 @@ export default {
   font-size: 0.9em;
   margin-top: 10px;
   font-style: italic;
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.login-btn {
+  background-color: #3498db;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>

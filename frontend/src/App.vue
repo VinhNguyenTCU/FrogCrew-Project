@@ -1,18 +1,21 @@
 <template>
   <div class="app">
     <!-- Navigation Bar - Hidden on Login Page -->
-    <nav class="navbar" v-if="!isLoginPage">
+    <nav class="navbar" v-if="!isLoginPage && !isRequestPage">
       <ul>
         <li><router-link to="/" class="nav-button">Home</router-link></li>
         <li><router-link to="/schedule" class="nav-button">Schedule</router-link></li>
+        <li v-if="isAuthenticated && !isAdmin">
+          <router-link to="/availability" class="nav-button">Availability</router-link>
+        </li>
         <li v-if="isAuthenticated">
           <router-link to="/crew-members" class="nav-button">Crew Members</router-link>
         </li>
         <li v-if="isAuthenticated">
           <router-link to="/profile" class="nav-button">Profile</router-link>
         </li>
-        <!-- Add Admin link only for admin users -->
-        <li v-if="isAuthenticated">
+        <!-- Admin link only for admin users -->
+        <li v-if="isAdmin">
           <router-link to="/admin" class="nav-button">Admin</router-link>
         </li>
       </ul>
@@ -55,11 +58,14 @@ export default {
   computed: {
     isLoginPage() {
       return this.$route.path === '/login'
+    },
+    isRequestPage() {
+      return this.$route.path === '/request-account'
+    },
+    isAdmin() {
+      return auth.isAdmin()
     }
   },
-  isAdmin() {
-      return auth.isAdmin()
-    },
   created() {
     this.checkAuth()
   },
